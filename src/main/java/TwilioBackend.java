@@ -81,6 +81,7 @@ public class TwilioBackend extends com.twilio.base.Resource{
 
             post("/sms", (req, res) -> {
                 String body = req.queryParams("Body");
+                System.out.println(body);
                 String to = req.queryParams("To");
                 String from = twilioNumber;
 
@@ -93,9 +94,32 @@ public class TwilioBackend extends com.twilio.base.Resource{
                 return message.getSid();
             });
 
+            post("/smsBack", (req, res) -> {
+                String body = req.queryParams("Body");
+//                body.substring(38, body.length());
+                String to = req.queryParams("To");
+                String from = twilioNumber;
+
+                System.out.println("unfiltered "  +body);
+
+//                System.out.println(body.substring(15, body.length()));
+
+
+                Map<String, String> callParams = new HashMap<>();
+                callParams.put("To", to);
+                callParams.put("From", from);
+                callParams.put("Body", body);
+                Sms message = client.getAccount().getSmsFactory().create(callParams);
+
+//                System.out.println("testing webhooks triggered");
+
+//                return message.getSid();
+                return body;
+            });
 
 
         }
+
 
 
 
