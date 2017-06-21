@@ -48,8 +48,7 @@ public class TranslatorService implements Runnable{
             String i;
             System.out.println("Output from Server .... \n");
             while ((i = br.readLine()) != null) {
-                translatedMsg = i;
-//                System.out.println(translatedMsg);
+                System.out.println(i);
             }
 
             conn.disconnect();
