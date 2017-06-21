@@ -20,6 +20,7 @@ dependencies {
 buildscript {
     repositories { jcenter() }
     dependencies {
+        compile 'com.squareup.okhttp3:okhttp:3.8.1'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
     }
 }
