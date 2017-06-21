@@ -40,7 +40,7 @@ public class TwilioBackend extends com.twilio.base.Resource{
 
 
             final CountDownLatch latch = new CountDownLatch(1);
-            Thread translatorService = new Thread(new TranslatorService(1000, latch));
+            Thread translatorService = new Thread(new TranslatorService(" i love you", 1000, latch));
 
             translatorService.start(); //separate thread will initialize CacheService
 
