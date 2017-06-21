@@ -40,19 +40,18 @@ public class TwilioBackend extends com.twilio.base.Resource{
 
 
             final CountDownLatch latch = new CountDownLatch(1);
-            Thread translatorService = new Thread(new TranslatorService(" i love you", 1000, latch));
+//            Thread translatorService = new Thread(new TranslatorService(" i love you", 1000, latch));
+//
+//            translatorService.start(); //separate thread will initialize CacheService
 
-            translatorService.start(); //separate thread will initialize CacheService
 
-
-            try{
-                latch.await();  //main thread is waiting on CountDownLatch to finish
-                System.out.println("In the main method" + TranslatorService.translatedMsg);
-                System.out.println("All services are up, Application is starting now");
-            }catch(InterruptedException ie){
-                ie.printStackTrace();
-            }
-
+//            try{
+//                latch.await();  //main thread is waiting on CountDownLatch to finish
+////                System.out.println("In the main method" + TranslatorService.translatedMsg);
+////                System.out.println("All services are up, Application is starting now");
+//            }catch(InterruptedException ie){
+//                ie.printStackTrace();
+//            }
 
             Twilio.init(SID, twilioToken);
             Message message1 = Message.fetcher("SMc7a8efb3289f6b68a9475ddf5d347f17").fetch();
@@ -66,7 +65,7 @@ public class TwilioBackend extends com.twilio.base.Resource{
             String mFrom;
             String receivedMessage;
 
-            // Loop over messages and print out a property for each one.
+            // Loop over messages and print out a property for eac  h one.
             for (Message message : messages) {
                 messageStore.add(message.getBody());
                 mTo = message.getTo().toString();
@@ -81,38 +80,23 @@ public class TwilioBackend extends com.twilio.base.Resource{
 
             }
 
-            for (String i : messageStore) {
-                if (i.length() > 25){
-//                    System.out.println(i.substring(38, i.length()));
-//                    System.out.println(i.substring(38, i.length()));
-                }
-            }
-
-
-
-//            ResourceSet<Message> messages = Message
-//                    .reader()
-//                    .setTo(new PhoneNumber("+15039983176"))
-//                    .setFrom(new PhoneNumber(twilioNumber))
-//                    .setDateSent(DateTime.parse("2016-01-01'T'09:28:00Z")).read();
-
-
-
-            // Loop over messages and print out a property for each one.
-//            for (Message message : messages) {
-//                System.out.println(message.getBody());
-//            }
-
 
             get("/", (req, res) -> "Hello, World!");
 
             TwilioRestClient client2 = new TwilioRestClient(SID, twilioToken);
 
             post("/sms", (req, res) -> {
+
                 String body = req.queryParams("Body");
                 System.out.println(body);
                 String to = req.queryParams("To");
                 String from = twilioNumber;
+
+                Thread translatorService = new Thread(new TranslatorService(body, 1000, latch));
+
+                translatorService.start(); //separate thread will initialize CacheService
+                System.out.println(TranslatorService.translatedMsg);
+
 
                 Map<String, String> callParams = new HashMap<>();
                 callParams.put("To", to);
