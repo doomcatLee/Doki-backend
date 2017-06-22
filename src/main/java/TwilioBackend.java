@@ -10,11 +10,16 @@ import com.twilio.base.ResourceSet;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.sdk.resource.instance.Sms;
 import com.twilio.type.PhoneNumber;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 
 import java.io.BufferedReader;
@@ -127,8 +132,16 @@ public class TwilioBackend extends com.twilio.base.Resource{
             get("/receiveSMS", (req,res) ->{
                 int length = conversation.getConvoList().size();
                 String save = conversation.getConvoList().get(length -1 );
+
+                System.out.println(save);
+                ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+                String json = ow.writeValueAsString(conversation);
+
+
                 conversation.clear();
-                return save;
+
+
+                return json;
             });
 
 
