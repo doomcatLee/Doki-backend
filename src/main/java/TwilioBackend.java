@@ -34,27 +34,16 @@ import java.util.concurrent.TimeUnit;
 public class TwilioBackend extends com.twilio.base.Resource{
 
         public static void main(String[] args) {
-            String SID = "ACca9625d5004aecd333d236abdf521852";
-            String twilioToken = "c4e7a3fb6a522a073e18423a04ac181c";
-            String twilioNumber = "+19713402317";
+            String SID = "ACc68a5633f3513f235b3ce7c5a2cedc6d";
+            String twilioToken = "783279d8c69d116820838cce1304ebc9";
+            String twilioNumber = "+19712385837";
+            Conversation conversation = new Conversation();
 
 
             final CountDownLatch latch = new CountDownLatch(1);
-//            Thread translatorService = new Thread(new TranslatorService(" i love you", 1000, latch));
-//
-//            translatorService.start(); //separate thread will initialize CacheService
 
-
-//            try{
-//                latch.await();  //main thread is waiting on CountDownLatch to finish
-////                System.out.println("In the main method" + TranslatorService.translatedMsg);
-////                System.out.println("All services are up, Application is starting now");
-//            }catch(InterruptedException ie){
-//                ie.printStackTrace();
-//            }
 
             Twilio.init(SID, twilioToken);
-            Message message1 = Message.fetcher("SMc7a8efb3289f6b68a9475ddf5d347f17").fetch();
 //            System.out.println(message1.getBody());
 
             ResourceSet<Message> messages = Message.reader().read();
@@ -95,7 +84,7 @@ public class TwilioBackend extends com.twilio.base.Resource{
                 Thread translatorService = new Thread(new TranslatorService(body, 1000, latch));
 
                 translatorService.start(); //separate thread will initialize CacheService
-                System.out.println(TranslatorService.translatedMsg);
+
 
 
                 Map<String, String> callParams = new HashMap<>();
@@ -108,26 +97,38 @@ public class TwilioBackend extends com.twilio.base.Resource{
             });
 
             post("/smsBack", (req, res) -> {
-                String body = req.queryParams("Body");
+                if(conversation.getConvoList().size() > 1){
+                    return null;
+                }else{
+                    String body = req.queryParams("Body");
 //                body.substring(38, body.length());
-                String to = req.queryParams("To");
-                String from = twilioNumber;
+                    String to = req.queryParams("To");
+                    String from = twilioNumber;
 
-                System.out.println("unfiltered "  + body);
+                    System.out.println(body);
 
-//                System.out.println(body.substring(15, body.length()));
+                    conversation.addToList(body);
+                    System.out.println("substring " + body);
+                    System.out.println("in conversation " +conversation.getConvoList().toString());
 
 
-                Map<String, String> callParams = new HashMap<>();
-                callParams.put("To", to);
-                callParams.put("From", from);
-                callParams.put("Body", body);
-                Sms message = client2.getAccount().getSmsFactory().create(callParams);
+                    Map<String, String> callParams = new HashMap<>();
+                    callParams.put("To", to);
+                    callParams.put("From", from);
+                    callParams.put("Body", body);
+                    Sms message = client2.getAccount().getSmsFactory().create(callParams);
 
-//                System.out.println("testing webhooks triggered");
+                }
 
-//                return message.getSid();
-                return body;
+
+                return "worked";
+            });
+
+            get("/receiveSMS", (req,res) ->{
+                int length = conversation.getConvoList().size();
+                String save = conversation.getConvoList().get(length -1 );
+                conversation.clear();
+                return save;
             });
 
 
